@@ -3,19 +3,25 @@ var context = canvas.getContext("2d");
 canvas.width= 512;
 canvas.height = 512;
 
-
 var air = [];
+var airbuffer = [];
 var SIZE = 128;
 
 function length(a){
 	return Math.sqrt(a[0]*a[0]+a[1]*a[1]);
 }
 
+function sigmoid(x){
+	return 1/(1+Math.pow(2, -x))
+}
+
+
 function draw(){
 	var ratio = canvas.width/SIZE;
 	for(var i=0; i<air.length; i++){
 		for(var j=0; j<air[i].length; j++){
-			context.fillStyle = hex(length(air[i][j])*255,0,0);
+			var intensity = sigmoid(air[i][j][0])*256;
+			context.fillStyle = hex(intensity, intensity, intensity);
 			context.fillRect(i*ratio,j*ratio,ratio,ratio);
 		}
 	}
@@ -42,18 +48,32 @@ function bound(x){
 }
 
 function step(){
+	airbuffer = air.map(function(e){return e.map(function(f){return f.slice();})});
+//	air = air.map(function(e){return e.map(function(f){return f.map(function(g){return 0;});});});
 	for(var i=0; i<air.length; i++){
 		for(var j=0; j<air[i].length; j++){
-			var v = air[i][j];
-			var dir = (Math.atan2(v[0], v[1]) + 3/2*Math.PI)%(2*Math.PI);
-			var index = Math.floor(2*dir/(Math.PI/4))%8;
-			air[bound(i - Math.floor((index-4)/3)%2)][bound(j - Math.floor(((index+6)%8-4)/3)%2)][0] += air[i][j][0]/2;
-			air[bound(i - Math.floor((index-4)/3)%2)][bound(j - Math.floor(((index+6)%8-4)/3)%2)][1] += air[i][j][1]/2;
-			air[i][j][0] /=2;
-			air[i][j][1] /=2;
-// 3 2 1
-// 4   0
-// 5 6 7
+			var surrounding = [];
+			var total = 0;
+			for(var v=bound(i-1); v<=bound(i+1); v++){
+				for(var h=bound(j-1); h<=bound(j+1); h++){
+					var dif = airbuffer[i][j][0]-airbuffer[v][h][0];
+					surrounding[(v-i+1)*3+(h-j+1)] = dif;
+					total += Math.abs(dif);
+				}
+			}
+			if(total != 0){
+				for(var v=bound(i-1); v<=bound(i+1); v++){
+					for(var h=bound(j-1); h<=bound(j+1); h++){
+						air[v][h][1] += airbuffer[i][j][0]*surrounding[(v-i+1)*3+(h-j+1)]/total;
+					}
+				}
+				air[i][j][1] -= airbuffer[i][j][0];
+			}
+		}
+	}
+	for(var i=0; i<air.length; i++){
+		for(var j=0; j<air[i].length; j++){
+			air[i][j][0] += air[i][j][1];	
 		}
 	}
 }
