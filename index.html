@@ -1,14 +1,100 @@
 <html>
 	<head>
 		<style>
+			html{
+				font-family:sans-serif;
+			}
+
 			canvas{
 				width:512px;
 				height:512px;
+			}
+			#inputs{
+				width: 300px;
+				background-color:rgba(0,0,0,0.2);
+				position:absolute;
+				right:10px;
+				bottom:10px;
+				border-radius:8px;
+				padding:5px;
+			}
+
+			#inputs > *{
+				padding:1px;
+			}
+			#inputs > * > div{
+				margin-left:15px;
+			}
+
+			.out{
+				background-color:white;
+				padding:1px;
+				margin:0;
+				width:30px;
+				height:16px;
+				display:inline-block;
+				margin-left:0;
+			}
+
+			#error{
+				color:red;
 			}
 		</style>
 	</head>
 	<body>
 		<canvas id="draw"></canvas>
+
+		<div id="inputs">
+			<div id="getLoc"> 
+				<strong>Get Pos</strong><br/>
+				Hover over the canvas to get positions. <br/> Click to freeze the position<br/>
+				&lt<div class=out id="x"></div>,<div class=out id="y"></div>&gt
+				<hr/>
+			</div>
+			<div id="modeInput">
+				<div><input type="radio" name="mode" id="walls" value=0> Displacement</div>
+				<div><input type="radio" name="mode" id="areas" value=1> Edit Area</div>
+				<div><input type="radio" name="mode" id="new" value=2> New Area</div>
+				<div><input type="radio" name="mode" id="remove" value=3> Remove Area</div>
+			</div>
+			<hr />
+
+			<div id="displace">
+				<strong>Set Velocity at a Point:</strong><br/>
+					Pos: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt<input id="velX" class="x" type="number" min=0 max=0 step=1 value=0 />, <input id="velY" class="y" type="number" min=0 max=0 step=1 value=0 />&gt<br/>
+					Set Velocity: <input id="velocity" type=number min=-50 max=50 value=0 step=1 /><br/>
+					<button id="setVelocity">Set Velocity</button>
+			</div>
+
+			<div id="editArea">
+				<strong>Edit Area:</strong><input id="editAreaIndex" class="areaIndex" type="number" min=0 max=0 step=1 value=0 /><br/>
+					<div>Damping: 	<input id="areaDamping" type=range min=0 max=1 value=0 step=0.01 /></div>
+					<div>Propogation Speed: <input id="areaWavePropogationSpeed" type=range min=0 max=1 value=0.2 step=0.01 /></div>
+					<div>Color: <input id="areaColor" type=color value="#FFFFFF"></div>
+					<button id="saveEdit">Save Changes</button>
+			</div>
+			<div id="newArea">
+				<strong>New Area</strong>
+					<div>
+						Top-Left Corner    :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt<input id="leftArea" class="x" type="number" min=0 max=0 step=1 value=0 />, <input id="topArea" class="y" type="number" min=0 max=0 step=1 value=0 />&gt
+					</div>
+					<div>
+						Bottom-Right Corner:&lt<input id="rightArea" class="x" type="number" min=0 max=0 step=1 value=0 />, <input id="bottomArea" class="y" type="number" min=0 max=0 step=1 value=0 />&gt
+					</div>
+					<br/>
+					<div>Damping: 	<input id="newareaDamping" type=range min=0 max=1 value=0 step=0.01 /></div>
+					<div>Propogation Speed: <input id="newareaWavePropogationSpeed" type=range min=0 max=1 value=0.2 step=0.01 /></div>
+					<div>Color: <input id="newareaColor" type=color value="#FFFFFF"></div>
+				<button id="newAreaAction">New Area</button>
+			</div>
+			<div id="removeArea" >
+				<strong>Remove Area</strong>
+				<div>Area Id:<input id="removeAreaIndex" class="areaIndex" type="number" min=0 max=0 step=1 value=0 /><br/></div>
+				<button id="removeAreaAction">Remove Area</button>
+			</div>
+		</div>
+		<script src="input.js"></script>
+		<script src="area.js"></script>
 		<script src="main.js"></script>
 	</body>
 </html>
