@@ -67,11 +67,12 @@ function addArea(area){
 
 function removeArea(index){
 	area = areas[index];
+	
 	areas.splice(index, 1);
 	for(var i=area.rect.x; i<area.rect.x+area.rect.w; i++){
-		for(var j=area.rect.y; j<area.rect.y+area.rect.h; i++){
+		for(var j=area.rect.y; j<area.rect.y+area.rect.h; j++){
 			for(var k = areas.length-1; k >= 0; k--){
-				if(areas[k].contains(i, j)){
+				if(areas[k].rect.contains(i, j)){
 					air[i][j].area = k;
 					break;
 				}
